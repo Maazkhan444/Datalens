@@ -8,11 +8,15 @@ from backend.core.metadata import MetadataEngine
 from backend.core.cleaner import DataCleaner
 from backend.core.visualizer import DataVisualizer
 from backend.ai.gemini_client import GeminiClient
+import os
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 # ==========================================
 # 🔑 CONFIGURATION
 # ==========================================
-GEMINI_API_KEY = "API"
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "PASTE_YOUR_API_KEY_HERE")
 
 # ==========================================
 # 🚀 APP SETUP & CUSTOM CSS

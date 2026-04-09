@@ -2,6 +2,7 @@ streamlit
 pandas
 numpy
 plotly
-google-generativeai
+google-genai
 ydata-profiling
-setuptools
+setuptools<70.0.0
+python-dotenv

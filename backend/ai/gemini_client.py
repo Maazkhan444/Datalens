@@ -1,27 +1,11 @@
-import google.generativeai as genai
 import json
 import re
+from google import genai
 
 class GeminiClient:
     def __init__(self, api_key):
-        genai.configure(api_key=api_key)
-        
-        # Priority Logic
-        priority_list = [
-            "models/gemini-1.5-flash", 
-            "models/gemini-flash-latest", 
-            "models/gemini-pro"
-        ]
-        self.selected_model_name = "models/gemini-pro"
-        try:
-            available = [m.name for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
-            for p in priority_list:
-                if p in available:
-                    self.selected_model_name = p
-                    break
-        except: pass
-
-        self.model = genai.GenerativeModel(self.selected_model_name)
+        self.client = genai.Client(api_key=api_key)
+        self.selected_model_name = "gemini-2.5-flash"
 
     def analyze(self, user_query, dataset_metadata):
         # UPDATED PERSONA PROMPT
@@ -49,11 +33,18 @@ class GeminiClient:
         """
         
         try:
-            result = self.model.generate_content(prompt)
+            result = self.client.models.generate_content(
+                model=self.selected_model_name,
+                contents=prompt,
+                config=genai.types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                ),
+            )
             text = result.text.strip()
             if "```" in text:
                 match = re.search(r"```(?:json)?(.*?)```", text, re.DOTALL)
                 if match: text = match.group(1).strip()
             return json.loads(text)
         except Exception as e:
+            print(f"DEBUG - Gemini API Error: {str(e)}")
             return {"response": f"DataGuru Error: {str(e)}", "visualization": None}
